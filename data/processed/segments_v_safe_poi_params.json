@@ -1,0 +1,37 @@
+{
+  "overture_min_confidence": 0.5,
+  "overture_top_percent": 95.0,
+  "speed_caps": {
+    "school": {
+      "enabled": true,
+      "speed_kmh": 30,
+      "iso_min_urban": 3,
+      "iso_min_rural": 5
+    },
+    "hospital": {
+      "enabled": false,
+      "speed_kmh": 30,
+      "iso_min_urban": 3,
+      "iso_min_rural": 5
+    },
+    "marketplace": {
+      "enabled": false,
+      "speed_kmh": 30,
+      "iso_min_urban": 3,
+      "iso_min_rural": 5
+    },
+    "shop": {
+      "enabled": false,
+      "speed_kmh": 30,
+      "iso_min_urban": 3,
+      "iso_min_rural": 5
+    },
+    "bus_stop": {
+      "enabled": false,
+      "speed_kmh": 30,
+      "iso_min_urban": 3,
+      "iso_min_rural": 5
+    }
+  },
+  "sandwich_max_length_m": 250.0
+}

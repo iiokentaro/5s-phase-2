@@ -1,0 +1,37 @@
+{
+    "source": {
+        "primary": "Elvik, R. (2019). A comprehensive and unified framework for analysing the effects on injuries of measures influencing speed. Accident Analysis and Prevention 125, 63-69.",
+        "coefficient_provenance": "fatal 0.08 from Elvik, R., Vadeby, A., Hels, T. & van Schagen, I. (2019). Updated estimates of the relationship between speed and road safety at the aggregate and individual levels. Accident Analysis and Prevention 123, 114-122; serious 0.06 and slight 0.04 from Elvik, R. (2014). Fart og trafikksikkerhet. Nye modeller. Rapport 1296, Transportokonomisk institutt, Oslo.",
+        "note": "Exponential model: relative injury rate = exp(k * (v - v_ref)), v in km/h. Elvik (2019) chooses it because it fits individual-driver data and high-speed data points well.",
+        "no_confidence_interval": "The paper reports point coefficients only and gives no confidence interval for k, so this model produces no CI columns; inventing one would be overconfidence."
+    },
+    "coefficients": {
+        "fatal": 0.08,
+        "serious": 0.06,
+        "slight": 0.04
+    },
+    "distribution": {
+        "sd_from_percentile": "sd = (p85 - mean) / 1.04",
+        "intervals": 12,
+        "span_sd": 3.0,
+        "interval_width_sd": 0.5,
+        "tail_handling": "Mass beyond +/-3 SD is absorbed into the outermost interval, matching Elvik (2019) Table 1 (0.6 / 1.7 / 4.4 / 9.2 / 15.0 / 19.1 %); shares therefore sum to exactly 1.",
+        "reference_speed": "Relative rates are set to 1.000 at the mean speed of traffic (Table 1). The reference cancels in every ratio this module computes, so it is implemented as a per-row centring on that row's own median_speed, which the normal assumption makes equal to the mean."
+    },
+    "severity_sets": {
+        "fatal": [
+            "fatal"
+        ],
+        "all3": [
+            "fatal",
+            "serious",
+            "slight"
+        ]
+    },
+    "implementation_notes": {
+        "scenarios": "uniform = the whole distribution shifted so its mean lands on v_safe (Elvik 2019 Fig. 2; the paper names lowering the speed limit as the measure resembling it) -- the reported scenario; tailcap = every interval speed capped at v_safe, lower intervals untouched (this repo's stylisation of Fig. 3, closer to speed cameras) -- sensitivity only.",
+        "uniform_is_a_self_check": "For a uniform shift the per-interval reduction is identical in every interval and the 12-interval sum collapses to (1 - exp(-k*delta)) * 100. The 12-interval path is computed anyway, never short-circuited, so tests/test_elvik_2019.py can use that identity to prove the distribution machinery is right.",
+        "reported_figure": "exp_delta_fatal_percent_uniform is the reported fatal-crash reduction and the CSV tie-break within rank_within_environment. It never enters safety_score, priority_class or rank_within_environment: the step runs last in POST_REFINE, after all three.",
+        "one_method": "Every row is computed under the normal assumption from median_speed and f85_speed (median taken as the mean, which the normal assumption makes identical). TomTom's 19 percentile points feed only the *_empirical check columns, on TomTom-covered rows."
+    }
+}

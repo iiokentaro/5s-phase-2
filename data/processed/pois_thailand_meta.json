@@ -1,0 +1,45 @@
+{
+  "country": "thailand",
+  "overture_min_confidence": 0.5,
+  "overture_top_percent": 95.0,
+  "overture_top_percent_thresholds": {
+    "is_school": 0.5767808705568314,
+    "is_hospital": 0.5677114009857179,
+    "is_marketplace": 0.3208412036299706,
+    "is_shop": 0.2355331264436245
+  },
+  "dedupe_radius_m": 10,
+  "n_rows": 363140,
+  "n_by_source_before_union": {
+    "osm": {
+      "is_school": 17142,
+      "is_hospital": 1789,
+      "is_marketplace": 1957,
+      "is_shop": 42172,
+      "is_bus_stop": 7997
+    },
+    "overture": {
+      "is_school": 42700,
+      "is_hospital": 6177,
+      "is_marketplace": 2517,
+      "is_shop": 274075,
+      "is_bus_stop": 0
+    }
+  },
+  "n_by_source_in_union": {
+    "osm": {
+      "is_school": 17142,
+      "is_hospital": 1789,
+      "is_marketplace": 1957,
+      "is_shop": 42172,
+      "is_bus_stop": 7997
+    },
+    "overture": {
+      "is_school": 35899,
+      "is_hospital": 4963,
+      "is_marketplace": 2309,
+      "is_shop": 248934,
+      "is_bus_stop": 0
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "release": "2026-08-19.0",
+  "boundary": "data/raw/INDIA-Maharashtra.geojson",
+  "n_rows": 148200,
+  "n_by_flag": {
+    "is_school": {
+      "taxonomy_only": 18984,
+      "after_name_lists": 14932,
+      "after_dedupe": 14929
+    },
+    "is_hospital": {
+      "taxonomy_only": 12945,
+      "after_name_lists": 8010,
+      "after_dedupe": 8008
+    },
+    "is_marketplace": {
+      "taxonomy_only": 188,
+      "after_name_lists": 188,
+      "after_dedupe": 188
+    },
+    "is_shop": {
+      "taxonomy_only": 125107,
+      "after_name_lists": 125107,
+      "after_dedupe": 125075
+    }
+  },
+  "n_health_promotion_hospital_excluded": 0,
+  "n_by_source_dataset": {
+    "meta": 131346,
+    "Microsoft": 12628,
+    "Foursquare": 3429,
+    "AllThePlaces": 566,
+    "DAC": 151,
+    "PinMeTo": 80
+  }
+}

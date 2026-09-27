@@ -1,0 +1,103 @@
+{
+  "_README": [
+    "Thresholds for segment_way_match.py, kept as data rather than module",
+    "constants so that each one can carry the measurement it came from.",
+    "A null value means 'not yet decided by measurement' and the code must",
+    "refuse to use it rather than fall back to a guess.",
+    "Follows the precedent set by src/road_access_rules.json."
+  ],
+  "vertex_cell_decimals": 6,
+  "vertex_cell_neighbourhood": 1,
+  "bearing_tolerance_deg": 30.0,
+  "tolerance_distance_m": 5.0,
+  "confidence_high_min_matched_frac": 0.95,
+  "divided_min_length_frac": 0.95,
+  "_provenance": {
+    "vertex_cell_decimals": {
+      "value": 6,
+      "by": "definition: latitude and longitude rounded to 6 decimal degrees count as identical",
+      "note": "6dp is ~0.11 m at these latitudes."
+    },
+    "vertex_cell_neighbourhood": {
+      "value": 1,
+      "by": "measurement",
+      "note": [
+        "Rounding to a 6dp grid is a QUANTIZATION, not a tolerance: two points",
+        "1e-7 deg apart straddle a cell boundary and land in different cells, so",
+        "plain cell equality is brittle and NON-MONOTONIC in the number of",
+        "decimals (7dp scored better than 6dp). Checking the 3x3 cell",
+        "neighbourhood restores the intended semantics.",
+        "Measured on 203 ADB segments lying wholly inside a Bangkok bbox,",
+        "7,355 vertices, against the rebuilt OSM layer:",
+        "  6dp exact cell          79.14% of vertices, per-segment median 0.850",
+        "  6dp + 3x3 neighbourhood 87.56% of vertices, per-segment median 0.948",
+        "  true distance <= 0.11 m 87.48% of vertices, per-segment median 0.944",
+        "The neighbourhood reproduces the distance test to within 0.08 points",
+        "and recovers the 8.4 points plain rounding loses."
+      ]
+    },
+    "bearing_tolerance_deg": {
+      "value": 30.0,
+      "by": "the same 30-degree bearing test as tomtom_match_rules.json bearing_tolerance_deg, confirmed by measurement",
+      "note": [
+        "Confirmed on the same sample: bearing difference to the nearest way is",
+        "median 0.6 deg, p90 3.9, p95 7.2 -- the nearest way almost always runs",
+        "the same way. The share beyond 30 deg SATURATES at 2.0% however far the",
+        "distance threshold is opened (1 m: 0.5%, 5 m: 1.7%, 20 m: 2.0%), i.e.",
+        "the test rejects a small fixed population of genuinely wrong candidates",
+        "(crossing roads) rather than trimming a continuum."
+      ]
+    },
+    "tolerance_distance_m": {
+      "value": 5.0,
+      "by": "measurement",
+      "note": [
+        "Applies only to parent edges the vertex rule did not match (8.0% of",
+        "741,889 Thai parent edges). Distance from such an edge's midpoint to",
+        "the nearest OSM way, 20,000 sampled: median 1.57 m, and",
+        "  <=0.5 m 30.4% | <=2 m 56.0% | <=5 m 85.3% | <=10 m 98.6% | <=50 m 100%",
+        "So the road is in OSM essentially always; the residual is the ~1.5 year",
+        "lag moving node positions, not missing geometry.",
+        "5 m rather than 10 m because a bearing test cannot protect against the",
+        "OPPOSITE CARRIAGEWAY of a divided road: it runs parallel, so its",
+        "bearing difference is ~0 and only distance separates it. Typical",
+        "carriageway spacing starts around 10 m, so 10 m would start attributing",
+        "a segment to the wrong side. The 14.7% of residual edges beyond 5 m",
+        "keep the honest 'unmatched' label instead of a guess."
+      ]
+    },
+    "confidence_high_min_matched_frac": {
+      "value": 0.95,
+      "by": "measurement",
+      "note": [
+        "Reads as: OSM accounts for at least 95% of this row's length.",
+        "Insensitive by design -- row coverage is concentrated at 1.0 (Thailand p5",
+        "is already 1.0), so the high share moves only from 98.9% at t=0.5 to 96.7%",
+        "at t=0.99. Thailand 97.3% / Maharashtra 96.1% at 0.95.",
+        "The column is therefore near-constant, so it carries little discriminating",
+        "power in safety_score._confidence_level (weight 0.15). It is accurate, and",
+        "it is less informative; both are true and the second is not a reason to",
+        "fake the first.",
+        "Kept two-valued: _confidence_level's cut points are calibrated for exactly",
+        "three two-valued columns."
+      ]
+    },
+    "divided_min_length_frac": {
+      "value": 0.95,
+      "by": "measurement",
+      "note": [
+        "Share of a row's MATCHED length whose ways are divided. Unmatched length",
+        "is excluded from the denominator: it is neither agreement nor dissent, and",
+        "osm_match_unmatched_frac reports it separately.",
+        "Also insensitive: the distribution is bimodal, not continuous. Of matched",
+        "Thai rows 63.7% are purely divided and 31.1% purely not, leaving 5.2%",
+        "strictly mixed (Maharashtra 25.2 / 65.8 / 9.0). is_divided therefore moves",
+        "only from 31,128 rows at t=0.5 to 29,132 at t=1.0 in Thailand.",
+        "0.95 rather than 1.0 so a single re-digitised sliver cannot veto a whole",
+        "divided highway, while still",
+        "requiring the evidence to cover the row, per the safety-side asymmetry",
+        "(raising V_safe needs evidence; leaving it at 30 km/h needs none)."
+      ]
+    }
+  }
+}

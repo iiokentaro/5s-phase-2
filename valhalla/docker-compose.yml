@@ -1,0 +1,39 @@
+services:
+  # Thailand: docker compose --profile thailand up
+  # Builds pedestrian routing tiles from the Thailand OSM PBF and serves on :8002.
+  # Run once, then stop before starting the maharashtra profile.
+  valhalla-thailand:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    profiles: ["thailand"]
+    ports:
+      - "8003:8002"
+    volumes:
+      # Full pbf on purpose -- do NOT point this at data/external/*.5s-filtered.osm.pbf
+      # (that one is the pyrosm tag-filtered subset and has no complete routable network).
+      - ../data/external/thailand-260621.osm.pbf:/custom_files/thailand-260621.osm.pbf:ro
+      - ./tiles/thailand:/data/valhalla
+    environment:
+      - serve_tiles=True
+      - build_elevation=False
+      - build_admins=False
+      - build_time_zones=False
+    restart: "no"
+
+  # Maharashtra: docker compose --profile maharashtra up
+  # Same port 8003 — run separately from the thailand profile.
+  valhalla-maharashtra:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    profiles: ["maharashtra"]
+    ports:
+      - "8003:8002"
+    volumes:
+      # Full pbf on purpose -- do NOT point this at data/external/*.5s-filtered.osm.pbf
+      # (that one is the pyrosm tag-filtered subset and has no complete routable network).
+      - ../data/external/western-zone-260621.osm.pbf:/custom_files/western-zone-260621.osm.pbf:ro
+      - ./tiles/maharashtra:/data/valhalla
+    environment:
+      - serve_tiles=True
+      - build_elevation=False
+      - build_admins=False
+      - build_time_zones=False
+    restart: "no"

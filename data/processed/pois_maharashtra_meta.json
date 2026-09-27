@@ -1,0 +1,45 @@
+{
+  "country": "maharashtra",
+  "overture_min_confidence": 0.5,
+  "overture_top_percent": 95.0,
+  "overture_top_percent_thresholds": {
+    "is_school": 0.3736143290996555,
+    "is_hospital": 0.3339065715670586,
+    "is_marketplace": 0.2167216315865517,
+    "is_shop": 0.2144742697477341
+  },
+  "dedupe_radius_m": 10,
+  "n_rows": 160424,
+  "n_by_source_before_union": {
+    "osm": {
+      "is_school": 2287,
+      "is_hospital": 9428,
+      "is_marketplace": 287,
+      "is_shop": 10339,
+      "is_bus_stop": 3968
+    },
+    "overture": {
+      "is_school": 14182,
+      "is_hospital": 7607,
+      "is_marketplace": 178,
+      "is_shop": 118821,
+      "is_bus_stop": 0
+    }
+  },
+  "n_by_source_in_union": {
+    "osm": {
+      "is_school": 2287,
+      "is_hospital": 9428,
+      "is_marketplace": 287,
+      "is_shop": 10339,
+      "is_bus_stop": 3968
+    },
+    "overture": {
+      "is_school": 13516,
+      "is_hospital": 6401,
+      "is_marketplace": 178,
+      "is_shop": 114023,
+      "is_bus_stop": 0
+    }
+  }
+}

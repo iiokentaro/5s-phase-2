@@ -1,0 +1,89 @@
+{
+  "_README": [
+    "Thresholds for tomtom_data_integration.py, kept as data so that each one",
+    "can carry the evidence it came from. Same convention as match_rules.json:",
+    "a null value means 'not yet decided' and the code refuses to run on it."
+  ],
+  "max_distance_m": 20.0,
+  "bearing_tolerance_deg": 30.0,
+  "bearing_window_m": 20.0,
+  "sample_step_m": 5.0,
+  "min_samples_per_tomtom": 10,
+  "min_tomtom_frac": 0.8,
+  "min_part_frac": 0.2,
+  "frechet_segmentize_m": 2.0,
+  "same_point_tolerance_m": 1.0,
+  "adb_vertex_snap_m": 0.2,
+  "t_junction_tolerance_m": 1.0,
+  "heavy_overlap_frac": 0.5,
+  "_provenance": {
+    "max_distance_m": {
+      "value": 20.0,
+      "by": "measurement (Maharashtra, 2026-09-24)",
+      "note": [
+        "Radius within which a TomTom sample point may be attributed to an ADB piece,",
+        "and the Frechet ceiling for accepting a part.",
+        "Matched parts at 20 m: Frechet p50 4.1 m, p90 10.9, p99 18.5; mean offset p50 2.8 m, p99 16.0.",
+        "Opening it gains little and what it gains is worse: 25 m +224 TomTom",
+        "segments (+75 km), 30 m +335, 40 m +407. Street-name agreement between",
+        "TomTom streetName and ADB names_primary is 24.6% over all matches (names",
+        "are formatted differently, so only the relative value means anything) but",
+        "17.4% / 11.4% / 10.1% over the segments each step adds.",
+        "Unmatched motorway (frc 0) TomTom lies a median 693 m from any ADB line:",
+        "roads ADB does not carry, not a tolerance problem."
+      ]
+    },
+    "bearing_tolerance_deg": {
+      "value": 30.0,
+      "by": "reused from match_rules.json bearing_tolerance_deg (measured there: nearest-way bearing difference median 0.6, p95 7.2 degrees)"
+    },
+    "bearing_window_m": {
+      "value": 20.0,
+      "by": "design. A line shorter than the window is measured end to end."
+    },
+    "sample_step_m": {
+      "value": 5.0,
+      "by": "design: every TomTom vertex plus points at min(step, length / min_samples_per_tomtom), so a 3 m segment still gets 10 samples"
+    },
+    "min_samples_per_tomtom": {"value": 10, "by": "design"},
+    "min_tomtom_frac": {
+      "value": 0.8,
+      "by": "measurement (Maharashtra, 2026-09-24)",
+      "evidence": "Share is bimodal: 2,218 TomTom segments at 0, 16,102 at 1, 623 in between spread thinly (106 in 0.6-0.8). 0.8 sits in that trough.",
+      "note": "Share of a TomTom segment's length that must lie beside SOME ADB piece. Keeps a road that ADB does not carry from being picked up where it merely passes close."
+    },
+    "min_part_frac": {
+      "value": 0.2,
+      "by": "design for the share; measurement for the length condition",
+      "note": [
+        "A TomTom segment running through a junction is split into one part per",
+        "uninterrupted segment. A part below this share of the TomTom length AND no",
+        "longer than max_distance_m is its overhang past the junction and is not a",
+        "match. The share keeps short TomTom segments from being penalised; the",
+        "length condition keeps a real 300 m stretch of a 2 km TomTom segment.",
+        "Maharashtra 2026-09-24: 31% of matched TomTom segments had such an overhang dropped."
+      ]
+    },
+    "frechet_segmentize_m": {
+      "value": 2.0,
+      "by": "design: discrete Frechet over vertices densified to this spacing errs by at most half of it"
+    },
+    "same_point_tolerance_m": {
+      "value": 1.0,
+      "by": "observation: ADB and OSM coordinates agree to about the 5th decimal (~1.1 m)",
+      "note": "Two cut positions this close on one ADB line are the same junction seen through two sources, and a cut this close to a line end is that end. Not a sliver policy: genuine short pieces are kept."
+    },
+    "adb_vertex_snap_m": {
+      "value": 0.2,
+      "by": "match_rules.json vertex_cell_decimals=6 with a 3x3 neighbourhood (~0.11 m each way), expressed as a distance"
+    },
+    "t_junction_tolerance_m": {
+      "value": 1.0,
+      "by": "design: an ADB line end within this distance of another ADB line's interior is a T junction"
+    },
+    "heavy_overlap_frac": {
+      "value": 0.5,
+      "by": "design: two same-direction TomTom segments whose ADB ranges overlap by at least half of the shorter one compete; the one nearer the ADB line wins"
+    }
+  }
+}

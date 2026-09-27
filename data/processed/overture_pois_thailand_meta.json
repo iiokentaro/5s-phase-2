@@ -1,0 +1,36 @@
+{
+  "release": "2026-08-19.0",
+  "boundary": "data/raw/THAILAND.geojson",
+  "n_rows": 340721,
+  "n_by_flag": {
+    "is_school": {
+      "taxonomy_only": 51541,
+      "after_name_lists": 43242,
+      "after_dedupe": 43242
+    },
+    "is_hospital": {
+      "taxonomy_only": 35396,
+      "after_name_lists": 6329,
+      "after_dedupe": 6329
+    },
+    "is_marketplace": {
+      "taxonomy_only": 2650,
+      "after_name_lists": 2650,
+      "after_dedupe": 2650
+    },
+    "is_shop": {
+      "taxonomy_only": 288530,
+      "after_name_lists": 288530,
+      "after_dedupe": 288500
+    }
+  },
+  "n_health_promotion_hospital_excluded": 12154,
+  "n_by_source_dataset": {
+    "meta": 330967,
+    "Foursquare": 6102,
+    "AllThePlaces": 2979,
+    "Microsoft": 607,
+    "PinMeTo": 57,
+    "DAC": 9
+  }
+}

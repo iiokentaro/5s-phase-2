@@ -1,0 +1,527 @@
+﻿{
+  "schema_version": 1,
+  "source": {
+    "tag_semantics": "OSM wiki Key:access. Access is evaluated as a hierarchy from general to mode-specific, and the most specific key present on the way wins. See also Key:foot, Key:bicycle, Key:motorcycle, Key:motorcar.",
+    "reference_implementations": "OSRM profiles/{car,bicycle,foot}.lua (access_tags_hierarchy, access_tag_whitelist, access_tag_blacklist, restricted_access_tag_list); Valhalla lua/graph.lua plus the DirectedEdge access bitmask (kAutoAccess, kMotorcycleAccess, kBicycleAccess, kPedestrianAccess and siblings). Neither project has a motorcycle mode in its stock car/bicycle/foot profiles; Valhalla does at the tile level, which is why this table splits it out.",
+    "country_law": {
+      "_provenance_warning": "Every claim below carries its own verification_status. 'primary' means the statute text was read directly. 'secondary' means attested by news reporting or an encyclopedia article citing an official. 'unverified' means asserted from background knowledge with no source checked.",
+      "_structural_finding": {
+        "summary": "Neither country's law attaches mode access to a road CLASS. Both delegate a per-road power exercised by Government Gazette notification. So no statute can ever be cited for a row of this table directly: the _base values generalise a collection of per-road notifications, and that generalisation is the thing carrying the risk, not the statute.",
+        "verification_status": "primary",
+        "enabling_provisions": {
+          "thailand": {
+            "instrument": "Highways Act B.E. 2535 (1992), as amended up to Highways Act (No. 2) B.E. 2549 (2006). Government Gazette Vol. 109, Part 52, Page 6, 18 April B.E. 2535 (1992).",
+            "translation": "Unofficial English translation by Chandler and Thong'ek Law Office Limited, reviewed by Prof. Phijaisakdi Horayangkura, for the Office of the Council of State's Law for ASEAN project. The Thai text is the sole authority.",
+            "text_source": "https://www.banpho-suphan.go.th/customers/content/download/content-971.pdf",
+            "section_6": "Highways are classified into 5 categories: (1) special highways; (2) national highways; (3) rural highways; (4) local highways; (5) concession highways.",
+            "section_7": "A special highway is a highway provided or constructed for specially through and rapid traffic as designated and announced by the Minister, and is registered as a special highway ... with control on entrance and exit only through a supplemental road that is part of the special highway.",
+            "section_8": "A national highway is a main highway connecting regions, provinces and districts, including major places ... registered as a national highway. NOTE: carries no entrance/exit control language.",
+            "section_54": "A special highway director shall have the power to forbid certain types of vehicles OR PEDESTRIANS from using a special highway in its entirety or in part by promulgation in the Government Gazette.",
+            "section_46": "No person shall ride, lead, herd, let loose or rear ANIMALS on traffic lanes, footpaths or shoulders, except in compliance with the regulations stipulated by the highway director. This is the only Act-level mode restriction that applies across all five categories, and it reaches animals only.",
+            "scope_of_the_prohibition_power": "Section 54 sits in Chapter II, CONTROL OF SPECIAL HIGHWAYS. There is NO parallel provision for national highways. That is the positive statutory basis for treating trunk as open, rather than an argument from silence.",
+            "in_part_caveat": "Section 54 permits prohibition of a special highway 'in its entirety OR IN PART', so mode access can in principle differ between sections of one motorway. This table cannot express that."
+          },
+          "india": {
+            "control_of_national_highways_act_2002_s35": {
+              "title": "Power to restrict the use of vehicles",
+              "text": "If the Highway Administration is satisfied that it is necessary in the interest of public safety or convenience, or because of the nature of any road or bridge so to do, it may, by notification in the Official Gazette, prohibit or restrict, subject to such exceptions or conditions as may be specified in the notification, the use of any Highway or part thereof by a class or classes of traffic either generally or on specified occasion or time as specified in the notification.",
+              "source": "https://www.advocatekhoj.com/library/bareacts/controlofnationalhighways/35.php",
+              "india_code": "https://www.indiacode.nic.in/handle/123456789/2028",
+              "note": "Reaches 'classes of traffic', which is broader than motor vehicles, so this is the instrument that can restrict pedestrians and pedal cycles on a National Highway. It applies to ANY National Highway, access-controlled or not."
+            },
+            "motor_vehicles_act_1988_s115": {
+              "title": "Power to restrict the use of vehicles",
+              "text": "The State Government or any authority authorised by the State Government, if satisfied that it is necessary in the interest of public safety or convenience, or because of the nature of any road or bridge, may by notification in the Official Gazette, prohibit or restrict the driving of motor vehicles or of any specified class or description of motor vehicles or the use of trailers either generally in a specified area or on a specified road.",
+              "source": "https://indiankanoon.org/doc/1631786/",
+              "limit": "Reaches MOTOR VEHICLES only. It cannot be the legal basis for prohibiting pedestrians or pedal cycles, so it explains the two- and three-wheeler bans on Maharashtra Expressways but NOT the pedestrian and bicycle bans reported for them."
+            }
+          }
+        }
+      },
+      "_osm_to_legal_category": {
+        "comment": "The bridge the table actually rests on. 'trunk' and 'motorway' are OSM classifications; no statute uses either word. Everything below is a mapping judgement, and it is where an error would do the most damage.",
+        "thailand": {
+          "motorway": "Registered special highway under Highways Act s.7. The mapping is well founded: s.7's defining feature is 'control on entrance and exit only through a supplemental road', which is the same access-control criterion OSM's motorway definition uses. Route numbers M7 / M9 / M81.",
+          "trunk": "thang luang phaendin, national highway under Highways Act s.8. Mapping judgement, NOT verified against the OSM Thailand community's tagging guidance, which could not be retrieved (both wiki URLs 404).",
+          "verification_status": "motorway primary, trunk unverified"
+        },
+        "maharashtra": {
+          "motorway": "Access-controlled Expressway (Mumbai-Pune Expressway, Samruddhi Mahamarg / ME-2), plus some urban access-controlled links that also carry the tag in this extract (Rajiv Gandhi Sea Link, Kamothe and Kalamboli flyovers, Sion-Panvel Highway).",
+          "trunk": "Predominantly National Highway. Mapping judgement, not verified against the OSM India tagging guidance.",
+          "verification_status": "unverified",
+          "note": "The extract shows the motorway tag is not reserved for Expressways here: Sion-Panvel Highway and a number of Mumbai flyovers carry it too. Measured on the boundary-clipped layer, 1,818.1 km carries highway=motorway, of which Samruddhi Mahamarg (1,090 ways) and the Mumbai-Pune Expressway (214) are the bulk, with Mumbai's elevated corridors and flyovers making up most of the remainder."
+        }
+      },
+      "maharashtra": {
+        "expressways_ban_two_and_three_wheelers": {
+          "claim": "Access-controlled Expressways in Maharashtra prohibit pedestrians (mode `foot`), pedal cycles (mode `bicycle`), motorised two-wheelers (mode `motorcycle`), three-wheelers, tractors and animal-drawn vehicles. _base.motorway encodes the first three. The rest have no mode in this table and are unmodelled.",
+          "verification_status": "secondary",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mumbai%E2%80%93Pune_Expressway -- pedestrians, pedal bicycles, two-wheelers, three-wheelers, bullock carts and tractors not permitted (tractor-trailers are)",
+            "https://en.wikipedia.org/wiki/Mumbai%E2%80%93Nagpur_Expressway",
+            "https://urbanacres.in/msrdc-vows-action-against-illegal-traffic-on-samruddhi-highway/ -- MSRDC enforcement against two-wheelers, three-wheelers and quadricycles on Samruddhi Mahamarg",
+            "https://www.freepressjournal.in/mumbai/maharashtra-govt-announces-speed-limit-for-mumbai-nagpur-samruddhi-expressway -- reports a state notification dated 4 October barring two-wheelers, auto rickshaws and quadricycles"
+          ],
+          "not_checked": "The MSRDC / Maharashtra gazette notification itself. The 4 October notification is known only through news reporting; its year was not established."
+        },
+        "sea_link_bans_two_wheelers": {
+          "claim": "Rajiv Gandhi Sea Link (Bandra-Worli Sea Link) prohibits two-wheelers, pedal cycles, three-wheelers and pedestrians. It appears in this extract as highway=motorway.",
+          "verification_status": "secondary",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Bandra%E2%80%93Worli_Sea_Link -- 'Two-wheeled, including motorbikes and pedal bicycles, and three-wheeled vehicles are prohibited as well.'; penalty INR 1200; pedestrian inaccessibility attributed to MSRDC's Satish Gavai"
+          ]
+        },
+        "national_highways_open_to_all_modes": {
+          "claim": "National Highways (OSM highway=trunk) are open to every mode BY DEFAULT ONLY. They can be restricted per road.",
+          "verification_status": "primary for the mechanism, unverified for this extract",
+          "law": "Control of National Highways (Land and Traffic) Act 2002 s.35 empowers the Highway Administration to restrict 'a class or classes of traffic' on ANY National Highway by Gazette notification, with no access-control precondition. So India's trunk is not structurally open the way Thailand's is.",
+          "residual_risk": "No search was made for s.35 notifications affecting the 24,245.1 km of trunk in this extract. Any that exist are silently unmodelled, and the table will read yes where the Gazette says no.",
+          "asymmetry_with_thailand": "This is a real legal difference between the two countries, not a tagging difference. Thailand's equivalent power (Highways Act s.54) is confined to special highways; India's is not."
+        }
+      },
+      "thailand": {
+        "motorways_ban_motorcycles": {
+          "claim": "Motorcycles are prohibited on Thai motorways and expressways. This is what _base.motorway.motorcycle encodes.",
+          "verification_status": "secondary",
+          "statute_cited_by_source": "Land Traffic Act B.E. 2522 (1979) Section 139, with the regulation on traffic in special lanes B.E. 2524 (1981). Maximum fine 1,000 baht.",
+          "sources": [
+            "https://www.motorist.co.th/en/article/3081/why-are-motorcycles-prohibited-on-expressways-in-thailand",
+            "https://thethaiger.com/news/national/new-m81-motorway-bans-bikes-motorcycles-tractors",
+            "https://www.nationthailand.com/news/policy/40057630 -- M81 Bang Yai-Kanchanaburi bars seven vehicle types: bicycles, motorcycles, three-wheeled motor vehicles, tractors, road rollers, agricultural vehicles, and human- or animal-powered vehicles"
+          ],
+          "not_checked": "The Thai statute and the Department of Highways regulation themselves."
+        },
+        "motorways_ban_bicycles": {
+          "claim": "Bicycles are prohibited on Thai motorways. This is what _base.motorway.bicycle encodes.",
+          "verification_status": "secondary",
+          "sources": [
+            "https://www.nationthailand.com/news/policy/40057630 -- bicycles named in the M81 prohibition list"
+          ],
+          "not_checked": "Whether the same prohibition is in force on Motorway 7 and Motorway 9; only M81 was sourced."
+        },
+        "motorways_ban_pedestrians": {
+          "claim": "Pedestrians are prohibited on Thai motorways. This is what _base.motorway.foot encodes, and it covers 1,611.0 km of this extract.",
+          "verification_status": "secondary",
+          "note": "Highways Act s.54 explicitly empowers a special highway director to forbid 'certain types of vehicles OR PEDESTRIANS' from a special highway. So pedestrian prohibition is a named, available power exercised per road by Gazette notification, not an inference from access control. What remains unchecked is the notification text for Motorway 7 and Motorway 9 specifically; only M81's vehicle list was sourced, and it names human-powered vehicles without mentioning walking."
+        },
+        "large_displacement_exemption_not_modelled": {
+          "claim": "motorcycle is 'no' on motorway throughout, with no displacement threshold.",
+          "verification_status": "unverified",
+          "note": "No source checked supports a large-displacement (400cc+) exemption per route or per period, and the one secondary mention found was not usable, so the table applies a flat prohibition. If an exemption does exist on Motorway 7 or 9, this row understates motorcycle access there."
+        },
+        "trunk_and_below_open_to_all_modes": {
+          "claim": "Thanon / thang luang phaendin (OSM trunk and below) are open to every mode.",
+          "verification_status": "primary",
+          "note": "Positively grounded in the Act's structure, not in silence. The power to forbid vehicles or pedestrians (s.54) sits in Chapter II, CONTROL OF SPECIAL HIGHWAYS, and has no counterpart for national highways (s.8). The only Act-level mode restriction spanning all five categories is s.46, which reaches animals only. trunk is 20,150.8 km here.",
+          "residual_risk": "The Land Traffic Act B.E. 2522 (1979) was not read; a restriction could live there rather than in the Highways Act."
+        }
+      },
+      "_mode_vocabulary": {
+        "comment": "Source reporting uses regional terms that do not map one-to-one onto this file's four modes, and two of them are ambiguous to a reader outside the region. Every note in this file uses the mode names on the right.",
+        "two-wheeler": {
+          "means": "a MOTORISED two-wheeler: motorcycle, scooter, moped.",
+          "maps_to_mode": "motorcycle",
+          "does_not_include": "the pedal bicycle, which sources name separately as 'pedal cycle' and which maps to mode `bicycle`.",
+          "why_it_needs_saying": "In Indian road usage 'two-wheeler' means a motorcycle by default; a reader elsewhere may read it as covering bicycles, which would put a bicycle ban and a motorcycle ban in the same claim when the sources state them separately."
+        },
+        "three-wheeler": {
+          "means": "auto-rickshaw and similar motorised three-wheeled vehicles.",
+          "maps_to_mode": "motor_vehicle",
+          "note": "This table has no separate three-wheeler mode, so a three-wheeler ban is not expressible in it. Where a road bans three-wheelers but admits cars, `motor_vehicle` still reads `yes` and that ban is unmodelled."
+        },
+        "NMT": {
+          "means": "Non-Motorised Transport: walking, pedal cycles, cycle-rickshaws, animal-drawn vehicles.",
+          "maps_to_modes": [
+            "foot",
+            "bicycle"
+          ],
+          "note": "Animal-drawn vehicles and cycle-rickshaws have no mode here, so those parts of an NMT ban are unmodelled."
+        },
+        "quadricycle": {
+          "means": "a light four-wheeled motor vehicle (e.g. Bajaj Qute).",
+          "maps_to_mode": "motor_vehicle",
+          "note": "Same limitation as three-wheeler: not separately expressible."
+        }
+      },
+      "_measurement_provenance": {
+        "comment": "Every km and way count in this file is measured on the OSM way layer clipped to each country's administrative boundary grown by a margin (src/osm_ways.py, src/osm_way_source.BOUNDARY_PATHS).",
+        "current_figures": {
+          "maharashtra_motorway": "1,756 ways / 1,818.1 km",
+          "maharashtra_trunk": "18,259 ways / 24,245.1 km",
+          "thailand_motorway": "2,630 ways / 1,611.0 km",
+          "thailand_trunk": "18,931 ways / 20,150.8 km"
+        },
+        "maharashtra_motorway_extent": "Clipped to the state, 1,818.1 km carries highway=motorway: Samruddhi Mahamarg 1,090 ways, Mumbai-Pune Expressway 214, then Mumbai's elevated corridors and flyovers. The state's motorway total cannot show whether the tag is right for a given road: a way that does not lie on an ADB segment is never attributed to one -- it shares no vertex and is never within the 5 m tolerance -- so its length cannot affect any output. Whether highway=motorway is the right tag for a road is a question about the ADB segments that were ATTRIBUTED to motorway ways, not about the state's motorway total. The test is to take those segments and check them, which src/road_class_coverage.py's aggregate figures cannot do."
+      }
+    },
+    "caveat": "legal_* states legal permission as OSM records it, mode by mode. A tag-evidenced legal_foot == 'no' is read as the absence of pedestrians only under the conditions in how_legal_no_may_be_read.",
+    "calibration_basis": "The country diffs below are each justified by a measured figure in outputs/road_class_coverage_{country}.json (m1_inventory). Diffs without such a figure were not added.",
+    "how_legal_no_may_be_read": {
+      "the_reading_now_permitted": "road_access_join.add_road_access treats a tag-evidenced legal_foot == 'no' as sufficient evidence that pedestrians are absent, and raises is_access_controlled on it -- which both permits a V_safe above 30 km/h and, through exposure_signals.vru_mask, discards Mapillary pedestrian detections on the row.",
+      "the_condition_that_makes_it_safe": "It is never read on the pedestrian mode alone. is_access_controlled asserts that neither a pedestrian nor a cyclist may be there, so the condition requires legal_foot == 'no' AND legal_bicycle == 'no'. A road that bars pedestrians while still admitting cyclists keeps 30 km/h. Both are resolved safety-side: any length of the row where the mode is permitted makes the row permitted, so a prohibition has to hold over the whole row. Measured: a pedestrian-only condition would raise 1,136 rows; 324 of them still permit a cyclist somewhere along their length and are excluded, leaving 812 (809 Thailand, 3 Maharashtra).",
+      "why_motorcycles_are_NOT_in_this_condition": "is_access_controlled claims that pedestrians and cyclists are separated from the carriageway; a motorcycle is a motor vehicle, so whether a rider may be present says nothing about that claim. With motorcycles in the condition, 80 rows with tag-evidenced foot=no and bicycle=no would read as not access-controlled, discarding real pedestrian-separation evidence over an unrelated mode. Whether a rider may be present is a speed question, answered in safe_speed.classify_collision_type, which holds such rows at 30 km/h unless a physical barrier separates riders from four-wheeled traffic (has_motorcycle_separation, read from the Mapillary objects). OSM records no barrier of any kind on the 71,629 ways matched to ADB segments.",
+      "residual_presence": "Pedestrians ARE physically present at toll plazas, interchanges and severed settlements on access-controlled roads in both countries, and the legal_* columns do not measure that. This residual presence is accepted as a known limitation of raising V_safe on these roads -- the same position the pipeline takes for highway=motorway, which raises V_safe on exactly this kind of legal prohibition.",
+      "scope": "Both countries. Nothing here is country-specific: the condition reads the resolved per-mode values, whatever rule or tag produced them.",
+      "the_rules_table_counts_on_both_sides": "This table is read symmetrically. _base.motorway.motorcycle == 'no' keeps 35 rows at 100 km/h without any motorcycle tag on the way, and _base.trunk.motorcycle == 'yes' takes 35 other rows down from 100 to 30 without one either. Accepting the table as evidence of a prohibition while refusing it as evidence of permission would be the asymmetry, not the reverse.",
+      "a_verified_tag_error": "A check of Nakhon In Road (ref \u0e19\u0e1a.1020, Nonthaburi) against street imagery and Thai law found motorcycle=no on ways 155339857 and 155339967 to be wrong: motorcycles are permitted. The same named road carries motorcycle=no on 37 ways, motorcycle=yes on 21 and no tag on 89, so the tagging is internally inconsistent. No filter separates the wrong ways from the rest -- the road has no maxspeed and no motorroad tag -- and the error rate across the wider network cannot be estimated from one case. An explicit tag is treated as correct anyway. This particular error does not reach is_access_controlled, which reads foot and bicycle; it reaches the motorcycle rule in safe_speed, where a wrong motorcycle=no on an access-controlled road lets it rise above 30 km/h although riders use it.",
+      "traceability": "safe_speed.compute_v_safe appends the access_control_basis to v_safe_basis on the access-controlled collision types, so a row raised by this gate reads separated:trunk:osm_vru_prohibited and is distinguishable in the deliverable from one raised by highway=motorway."
+    }
+  },
+  "modes": [
+    "motor_vehicle",
+    "motorcycle",
+    "bicycle",
+    "foot"
+  ],
+  "access_hierarchy": {
+    "motor_vehicle": [
+      "access",
+      "vehicle",
+      "motor_vehicle",
+      "motorcar"
+    ],
+    "motorcycle": [
+      "access",
+      "vehicle",
+      "motor_vehicle",
+      "motorcycle"
+    ],
+    "bicycle": [
+      "access",
+      "vehicle",
+      "bicycle"
+    ],
+    "foot": [
+      "access",
+      "foot"
+    ]
+  },
+  "mode_specific_keys": [
+    "motorcar",
+    "motorcycle",
+    "motor_vehicle",
+    "bicycle",
+    "foot"
+  ],
+  "value_domain": [
+    "yes",
+    "no",
+    "restricted",
+    "unknown"
+  ],
+  "value_map": {
+    "yes": "yes",
+    "designated": "yes",
+    "official": "yes",
+    "permissive": "yes",
+    "public": "yes",
+    "allowed": "yes",
+    "destination": "restricted",
+    "customers": "restricted",
+    "permit": "restricted",
+    "delivery": "restricted",
+    "private": "restricted",
+    "residents": "restricted",
+    "bus": "restricted",
+    "psv": "restricted",
+    "agricultural": "no",
+    "forestry": "no",
+    "military": "no",
+    "emergency": "no",
+    "no": "no",
+    "false": "no",
+    "dismount": "no",
+    "use_sidepath": "no",
+    "unknown": "unknown"
+  },
+  "structural_keys": {
+    "comment": "Read into their own informational columns, deliberately NOT into legal_*. sidewalk/cycleway are evidence about physical separation, not statements of legal permission; folding them in would let sidewalk=both on a motorway flip pedestrian legality. The later presence/exposure layer is their consumer.",
+    "sidewalk_present_values": [
+      "both",
+      "left",
+      "right",
+      "yes",
+      "separate"
+    ],
+    "cycleway_present_prefixes": [
+      "lane",
+      "track",
+      "share_busway",
+      "opposite_lane",
+      "opposite_track",
+      "shared_lane",
+      "crossing"
+    ]
+  },
+  "defaults": {
+    "_base": {
+      "motorway": {
+        "motor_vehicle": "yes",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "motorway_link": {
+        "motor_vehicle": "yes",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "trunk": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "trunk_link": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "primary": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "primary_link": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "secondary": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "secondary_link": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "tertiary": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "tertiary_link": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "unclassified": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "residential": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "living_street": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "service": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "road": {
+        "motor_vehicle": "unknown",
+        "motorcycle": "unknown",
+        "bicycle": "unknown",
+        "foot": "unknown"
+      },
+      "busway": {
+        "motor_vehicle": "restricted",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "track": {
+        "motor_vehicle": "restricted",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "path": {
+        "motor_vehicle": "no",
+        "motorcycle": "unknown",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "footway": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "yes"
+      },
+      "pedestrian": {
+        "motor_vehicle": "restricted",
+        "motorcycle": "no",
+        "bicycle": "unknown",
+        "foot": "yes"
+      },
+      "cycleway": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "yes",
+        "foot": "unknown"
+      },
+      "bridleway": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "unknown",
+        "foot": "unknown"
+      },
+      "steps": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "yes"
+      },
+      "crossing": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "unknown",
+        "foot": "yes"
+      },
+      "corridor": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "yes"
+      },
+      "construction": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "proposed": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "planned": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "raceway": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "escape": {
+        "motor_vehicle": "restricted",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "no"
+      },
+      "rest_area": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "services": {
+        "motor_vehicle": "yes",
+        "motorcycle": "yes",
+        "bicycle": "yes",
+        "foot": "yes"
+      },
+      "bus_stop": {
+        "motor_vehicle": "unknown",
+        "motorcycle": "unknown",
+        "bicycle": "unknown",
+        "foot": "yes"
+      },
+      "elevator": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "unknown",
+        "foot": "yes"
+      },
+      "via_ferrata": {
+        "motor_vehicle": "no",
+        "motorcycle": "no",
+        "bicycle": "no",
+        "foot": "yes"
+      }
+    },
+    "maharashtra": {
+      "_note": "Expressways (highway=motorway, 1,756 ways / 1,818.1 km in this extract) ban pedestrians (mode `foot`), pedal cycles (mode `bicycle`) and motorised two-wheelers (mode `motorcycle`), which _base.motorway already encodes as foot=no, bicycle=no, motorcycle=no. The three-wheeler and quadricycle bans the sources also report are NOT expressible here: this table has no such mode, so motor_vehicle stays yes. See source.country_law._mode_vocabulary. National Highways are tagged trunk (18,259 ways / 24,245.1 km) and stay open to every mode by default -- this is where VRU exposure concentrates, not on motorway.",
+      "track": {
+        "motor_vehicle": "yes",
+        "_why": "417.2 km / 5,412 ways. Rural Maharashtra farm tracks carry tractors, tempos and motorcycles as ordinary through traffic; the _base 'restricted' reflects access=agricultural semantics that are not how these are used here."
+      }
+    },
+    "thailand": {
+      "_note": "Motorway 7 / 9 / 81 (highway=motorway, 2,630 ways / 1,611.0 km in this extract) ban pedestrians (mode `foot`), bicycles (mode `bicycle`) and motorcycles (mode `motorcycle`), which _base.motorway already encodes. The table applies a flat motorcycle prohibition with no displacement threshold (see source.country_law.thailand.large_displacement_exemption_not_modelled).",
+      "service": {
+        "foot": "yes",
+        "motorcycle": "yes",
+        "_why": "15,361.5 km / 350,229 ways = 33.5% of all network km, against 15.7% in Maharashtra. Thai mapping practice files soi and on-premise lanes under service; they are publicly walked and ridden. Same value as _base, pinned here so the intent is explicit rather than inherited by accident on the single largest class in the country."
+      },
+      "path": {
+        "motorcycle": "yes",
+        "_why": "242.1 km / 6,605 ways. Motorcycles routinely use paths in Thailand, so the _base 'unknown' would leave the dominant mode undecided on this class."
+      },
+      "track": {
+        "motor_vehicle": "yes",
+        "_why": "2,496.8 km / 22,716 ways = 5.4% of network km. Plantation and field tracks carry pickups and motorcycles as through traffic."
+      }
+    }
+  },
+  "confidence_rule": {
+    "comment": "Confidence reports the strength of the EVIDENCE, not the plausibility of the answer. 'low' means no tag on the way spoke to this mode, so the rules table decided it. residential -> foot=yes is 'low' and almost certainly correct. Conflating evidence with plausibility is the failure this module exists to avoid.",
+    "high": "basis is a mode-specific tag (see mode_specific_keys)",
+    "medium": "basis is a generic tag (access, vehicle)",
+    "low": "basis is any default:*, or the resolved value is 'unknown'"
+  },
+  "implementation_notes": {
+    "barrier_out_of_scope": "barrier=* is overwhelmingly a node tag and the wide way extract carries no node data, so barriers are not evaluated. An always-empty barrier column would imply coverage that does not exist.",
+    "conditional_not_folded": "access:conditional and its mode variants are surfaced as has_conditional / conditional_keys and never folded into the value. OSRM ignoring conditional restrictions by default is right for routing and wrong for analysis, so the information is kept rather than discarded.",
+    "unknown_never_collapsed": "'unknown' is never collapsed into 'no'. Collapsing it is what makes a rule-based estimate look more confident than it is.",
+    "deliberate_divergence_from_osrm_valhalla": {
+      "comment": "Verified against the actual profile/graph-building sources (not memory) on 2026-09-20: profiles/{car,bicycle,foot}.lua at github.com/Project-OSRM/osrm-backend and lua/graph.lua at github.com/valhalla/valhalla, both at their `master` HEAD on that date. OSRM and Valhalla do not agree with each other on these cells, so 'align with the routing engines' is not a single target. Two cells are deliberately set against one or both engines' defaults, on legal grounds, and a future cross-check against a Valhalla build of these PBFs must not treat a mismatch on these specific cells as a finding.",
+      "trunk.foot": {
+        "this_table": "yes",
+        "osrm_foot_lua_default": "no (motorway and trunk are both absent from foot.lua's `speeds.highway` table; a way with no explicit foot/access tag gets no speed and is dropped from the pedestrian graph entirely)",
+        "valhalla_graph_lua_default": "yes (trunk row: pedestrian_forward = true)",
+        "why_this_table_disagrees_with_osrm": "OSRM's omission is a routing-UX caution against suggesting a multi-km walk on an untagged arterial, not a legal or factual claim about trunk. This table's job is exposure estimation, not turn-by-turn suggestion, and trunk is 487.5 km (Maharashtra) / 868.6 km (Thailand) of ordinary through-town arterial -- not a motorway-to-local connector, which is what motorway_link/trunk_link are for -- open to pedestrians under both countries' statutes (Highways Act s.54 confined to special highways; Control of National Highways Act s.35 not shown to have been exercised on this network). Matches Valhalla on this cell.",
+        "verification_status": "primary (statute) for the legal claim; primary (source read) for the OSRM/Valhalla claim"
+      },
+      "trunk.bicycle": {
+        "same_reasoning_as": "trunk.foot",
+        "osrm_bicycle_lua_default": "no (motorway and trunk absent from bicycle.lua's `bicycle_speeds` table)",
+        "valhalla_graph_lua_default": "yes (trunk row: bike_forward = true)"
+      },
+      "motorway.motorcycle": {
+        "this_table": "no",
+        "osrm_default": "no dedicated motorcycle profile ships with OSRM; not comparable",
+        "valhalla_graph_lua_default": "true (motorway row: motorcycle_forward = true, and the tag-override logic at lua/graph.lua only turns this OFF given an explicit negative tag -- motorcycle=no, motor_vehicle=no or access=no -- never off by highway class alone; the motorcycle costing model's `use_highways` is a soft cost weight, not a hard exclusion, per src/sif/motorcyclecost.cc)",
+        "why_this_table_disagrees_with_valhalla": "Valhalla's default is the SAME gap this table exists to correct: on an untagged motorway way, Valhalla would compute motorcycle access true, for the identical reason road_access.py's basis_report finds -- the law that bans two-wheelers on Expressways/special highways is never carried in an OSM tag, so any engine that reads only tags defaults to permissive. This table overrides it on the strength of the statute reporting sourced in country_law (MSRDC/NHAI Expressway rules; Highways Act s.54 vehicle prohibitions).",
+        "consequence_for_future_valhalla_cross_checks": "A Valhalla build of these PBFs will very likely report motorcycle=yes on most untagged motorway km in both countries. Do not read that agreement as corroboration for this table's 'no': Valhalla did not independently arrive at it, it shares the same blind spot. Read a Valhalla motorcycle=no result as the informative signal instead (it means an explicit negative tag exists on that way).",
+        "verification_status": "primary (source read) for the Valhalla claim"
+      }
+    }
+  }
+}

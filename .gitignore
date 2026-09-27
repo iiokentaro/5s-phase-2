@@ -1,0 +1,326 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#   Usually these files are written by a python script from a template
+#   before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+# Pipfile.lock
+
+# UV
+#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+# uv.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+# poetry.lock
+# poetry.toml
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
+#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
+# pdm.lock
+# pdm.toml
+.pdm-python
+.pdm-build/
+
+# pixi
+#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
+# pixi.lock
+#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
+#   in the .venv directory. It is recommended not to include this directory in version control.
+.pixi
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# Redis
+*.rdb
+*.aof
+*.pid
+
+# RabbitMQ
+mnesia/
+rabbitmq/
+rabbitmq-data/
+
+# ActiveMQ
+activemq-data/
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+#   JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#   be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#   and can be added to the global gitignore or merged into this file.  For a more nuclear
+#   option (not recommended) you can uncomment the following to ignore the entire idea folder.
+# .idea/
+
+# Abstra
+#   Abstra is an AI-powered process automation framework.
+#   Ignore directories containing user credentials, local state, and settings.
+#   Learn more at https://abstra.io/docs
+.abstra/
+
+# Visual Studio Code
+#   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
+#   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#   and can be added to the global gitignore or merged into this file. However, if you prefer, 
+#   you could uncomment the following to ignore the entire vscode folder
+# .vscode/
+# Temporary file for partial code execution
+tempCodeRunnerFile.py
+
+# Ruff stuff:
+.ruff_cache/
+
+# PyPI configuration file
+.pypirc
+
+# Marimo
+marimo/_static/
+marimo/_lsp/
+__marimo__/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Large raw GeoJSON exports (too big for git; re-derive from QGIS/ or source)
+data/raw/*.geojson
+# Overture regional extracts (re-derive via src/fetch_overture_roads.py)
+data/raw/*_overture_roads.parquet
+data/raw/*_overture_roads_polygon.parquet
+# ...except the two ADB inputs, tracked on purpose.
+!data/raw/ADB_Innovation_Maharashtra.geojson
+!data/raw/ADB_Innovation_Thailand.geojson
+
+# Mapillary fetch outputs (re-derivable via src/fetch_mapillary_features.py)
+data/mapillary/*.json
+data/mapillary/.map_features_thailand.jsonl
+data/mapillary/.map_features_maharashtra.jsonl
+
+# write_geo_outputs no longer writes this file (superseded by
+# outputs/segments_priority.parquet); kept ignored in case an older checkout
+# or manual run leaves one behind.
+outputs/segments_priority.geojson
+
+# Written by priority_map.write_gpkg; over GitHub's 100MB limit, so kept local.
+# outputs/segments_priority.gdb.zip is the file uploaded to ArcGIS Online.
+outputs/segments_priority.gpkg
+
+# folium/Leaflet HTML map exceeds GitHub's 100MB limit (inlines all geometry).
+# The interactive map deliverable is now docs/index.html (MapLibre + PMTiles);
+# this file is kept locally only as a byproduct of src/quick_reproduce.py.
+outputs/priority_map.html
+
+# Last pipeline-run state written by src/pipeline_service.py, so a restarted
+# server can still show the chain it was in the middle of. Machine-local.
+outputs/.pipeline_run.json
+outputs/.pipeline_run.tmp
+
+# osmnx HTTP response cache
+cache/
+
+# External downloads (OSM pbf, WorldPop rasters) -- large, re-derivable via
+# the documented URLs in README.md
+data/external/**
+!data/external/**/
+
+# Diagnostic-only extraction cache (src/road_class_coverage.py). Hundreds of MB,
+# re-derivable from the pbf; never an input to the pipeline.
+data/interim/**
+!data/interim/**/
+
+# Full-geometry OSM way layer (src/osm_ways.py): Thailand 492 MB, Maharashtra
+# 299 MB, of which ~90% is geometry -- past GitHub's 100 MB per-file limit, and
+# dropping the `tags` column would only save 7%.
+#
+# Every other data/processed/ parquet is tracked on purpose, for reproducibility
+# from a clone. This one is not, because that reason does not apply to it: its
+# input (data/external/*.osm.pbf) is already untracked, so a clone cannot use
+# this file without first fetching the pbf -- at which point
+#     python src/osm_ways.py --country both
+# rebuilds it in 61 s (Thailand) / 36 s (Maharashtra), and every build is
+# checked against the pbf's own declared counts by
+# osm_way_source.assert_conservation. Tracking a large derivative of an
+# untracked input buys nothing.
+data/processed/osm_ways_*.parquet
+
+# Geofabrik western-zone GPKG (~1 GB). Re-download from the URL in
+# QGIS/western-zone-260919-free.gpkg/README; GitHub's file limit is 100 MB.
+QGIS/western-zone-260919-free.gpkg/*.gpkg
+
+# Valhalla routing tiles (数 GB、再生成可能)
+valhalla/tiles/thailand/*
+valhalla/tiles/maharashtra/*
+!valhalla/tiles/thailand/.gitkeep
+!valhalla/tiles/maharashtra/.gitkeep
+
+# isochrone 生成済み parquet は原則コミット推奨だが、100 MB 超なら除外を検討
+# data/processed/isochrones/*.parquet
+
+# src/osm_way_source.py's highway_pbf()/buffered_boundary() cache derived pbf
+# and boundary-buffer geojson files next to whatever source pbf they were built
+# from (tests/fixtures/bkk_small.osm.pbf for the test suite). Each carries the
+# clip boundary's mtime_ns in its name, so every test run that rebuilds the
+# clip polygon (tests/test_osm_way_source_equivalence.py's per-test tmp
+# boundary file) leaves a new, never-cleaned-up file behind. Re-derived
+# automatically; only tests/fixtures/bkk_small.osm.pbf is a real fixture.
+tests/fixtures/*.highways*.osm.pbf
+tests/fixtures/*.buffer*m.geojson
+
+# Local development notes (not for version control)
+dev_docs/
+
+# Local submission drafts (not for version control)
+submission_form/
+
+# macOS
+.DS_Store
+
+# StoryMap upload layers (docs/storymaps_idea/export_storymap_layers.ipynb); large, rebuilt on demand
+docs/storymaps_idea/layers/
+# Basemap tile cache of docs/storymaps_idea/create_3d_layered_image.ipynb
+docs/storymaps_idea/images/.tile_cache/
+
+# Empty-directory markers. The pipeline writes into data/ subdirectories that
+# hold no committed file; keeping the markers gives a clone the same layout as
+# the working repository. KICKSTART.md says which files go where.
+!**/.gitkeep
+
+# Mapillary POI cache, rebuilt by src/exposure_signals.py from the map-feature
+# JSON. Mapillary data may not be redistributed, so it stays out of this
+# repository; a run without the JSON writes an empty placeholder.
+data/processed/mapillary_pois_*.parquet
