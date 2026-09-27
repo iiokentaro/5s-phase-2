@@ -55,74 +55,70 @@
   .maplibregl-popup-content .expl { margin: 0 0 6px 0; font-style: italic; }
 </style>
 <link rel="stylesheet" href="app.css">
-<script src="i18n.js"></script>
+<script src="vsafe.js"></script>
 </head>
 <body>
 
 <div id="map"></div>
-<div id="loading" data-ja="区間を読み込み中…">Loading segments…</div>
+<div id="loading">Loading segments…</div>
 
-<button id="hamburger" type="button" aria-controls="sidebar" aria-expanded="true" title="Toggle panel" data-ja-title="パネルの開閉">☰</button>
+<button id="hamburger" type="button" aria-controls="sidebar" aria-expanded="true" title="Toggle panel">☰</button>
 
 <aside id="sidebar">
  <div id="sidebar-inner">
   <div class="sb-head">
     <img src="assets/5s-logo.png" alt="">
     <div><b>Safer Roads, Safer Speeds</b><small>ADB Innovation Challenge</small></div>
-    <div class="lang-switch" role="group" aria-label="Language" data-ja-aria-label="表示言語">
-      <button type="button" data-lang-choice="en">EN</button>
-      <button type="button" data-lang-choice="ja">日本語</button>
-    </div>
   </div>
 
   <nav class="sb-nav">
-    <a href="index.html" aria-current="page" data-ja="地図">Map</a>
-    <a href="explainer_en.html" data-ja-href="explainer.html" data-ja="解説">Explainer</a>
+    <a href="index.html" aria-current="page">Map</a>
+    <a href="explainer_en.html">Explainer</a>
     <a href="https://github.com/iiokentaro/5s" target="_blank" rel="noopener">GitHub</a>
   </nav>
 
-  <p class="sb-title" data-ja="データパイプライン">Data pipeline</p>
+  <p class="sb-title">Data pipeline</p>
   <div id="presets"></div>
 
   <div class="confirm" id="confirm" hidden>
     <div id="confirm-text"></div>
-    <label><input type="checkbox" id="confirm-check"> <span data-ja="ダウンロードと実行の内容を理解しました。">I understand what this will download and run.</span></label>
+    <label><input type="checkbox" id="confirm-check"> <span>I understand what this will download and run.</span></label>
   </div>
 
   <div class="sb-opt" id="severity-opt">
-   <p class="sb-opt-title"><span class="cite" tabindex="0" aria-describedby="cite-elvik-2019">Elvik (2019)<span class="cite-pop" id="cite-elvik-2019" role="tooltip"><span class="cite-box">Elvik, Rune. &ldquo;A comprehensive and unified framework for analysing the effects on injuries of measures influencing speed.&rdquo; <i>Accident Analysis &amp; Prevention</i> 125 (2019): 63&ndash;69. <a href="https://doi.org/10.1016/j.aap.2019.01.033" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.aap.2019.01.033</a></span></span></span> <span data-ja="モデルで報告する重症度">model: severity reported</span></p>
-   <label><input type="radio" name="severity" value="fatal" checked> <span data-ja="死亡のみ (k=0.08)">Fatal only (k=0.08)</span></label>
-   <label><input type="radio" name="severity" value="all3"> <span data-ja="＋重傷・軽傷 (0.06 / 0.04)">+ serious &amp; slight (0.06 / 0.04)</span></label>
+   <p class="sb-opt-title"><span class="cite" tabindex="0" aria-describedby="cite-elvik-2019">Elvik (2019)<span class="cite-pop" id="cite-elvik-2019" role="tooltip"><span class="cite-box">Elvik, Rune. &ldquo;A comprehensive and unified framework for analysing the effects on injuries of measures influencing speed.&rdquo; <i>Accident Analysis &amp; Prevention</i> 125 (2019): 63&ndash;69. <a href="https://doi.org/10.1016/j.aap.2019.01.033" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.aap.2019.01.033</a></span></span></span> <span>model: severity reported</span></p>
+   <label><input type="radio" name="severity" value="fatal" checked> <span>Fatal only (k=0.08)</span></label>
+   <label><input type="radio" name="severity" value="all3"> <span>+ serious &amp; slight (0.06 / 0.04)</span></label>
   </div>
 
   <div class="sb-opt" id="poi-opt">
-   <p class="sb-opt-title" data-ja="POI の設定（Full・Complete のみ）">POI parameters, Full / Complete only</p>
-   <p class="sb-opt-sub" data-ja="Overture の場所は、confidence が A 以上<b>または</b>種類ごとの上位 B% に入れば残す">Overture place kept when confidence &ge; A <b>or</b> in the top B% of its type</p>
-   <label class="poi-num"><span data-ja="A: confidence の下限">A: min confidence</span> <input type="number" id="poi-min-conf" min="0" max="1" step="0.05"></label>
-   <label class="poi-num"><span data-ja="B: 種類ごとの上位 %">B: top % per type</span> <input type="number" id="poi-top-pct" min="0" max="100" step="1"></label>
-   <p class="sb-opt-sub" data-ja="POI の種類ごとの V_safe 上限と徒歩圏（分）">V_safe cap within a walk of each POI type</p>
+   <p class="sb-opt-title">POI parameters, Full / Complete only</p>
+   <p class="sb-opt-sub">Overture place kept when confidence &ge; A <b>or</b> in the top B% of its type</p>
+   <label class="poi-num"><span>A: min confidence</span> <input type="number" id="poi-min-conf" min="0" max="1" step="0.05"></label>
+   <label class="poi-num"><span>B: top % per type</span> <input type="number" id="poi-top-pct" min="0" max="100" step="1"></label>
+   <p class="sb-opt-sub"><i>V</i><sub>safe</sub> cap within a walk of each POI type</p>
    <table class="poi-caps">
-    <thead><tr><th data-ja="種類">Type</th><th data-ja="適用">Apply</th><th>km/h</th><th title="Walking minutes, urban" data-ja-title="徒歩分数（市街地）" data-ja="市街地 分">Urban min</th><th title="Walking minutes, rural" data-ja-title="徒歩分数（郊外）" data-ja="郊外 分">Rural min</th></tr></thead>
+    <thead><tr><th>Type</th><th>Apply</th><th>km/h</th><th title="Walking minutes, urban">Urban min</th><th title="Walking minutes, rural">Rural min</th></tr></thead>
     <tbody id="poi-caps"></tbody>
    </table>
-   <p class="sb-note" data-ja="範囲は Valhalla の徒歩アイソクロンです。適用する種類と分数のアイソクロンがなければ、Docker で Valhalla を起動して先に作成します（初回は国ごとに 30 分〜2 時間のタイル作成。商店は数十万件あり数時間かかります）。">The zone is a Valhalla walking isochrone. One missing for an applied type and its minutes is built first, starting Valhalla in Docker (first start: 30 min&ndash;2 h per country to build routing tiles; shops number in the hundreds of thousands and take hours).</p>
-   <p class="sb-opt-sub" data-ja="この長さ以下で、両端に接するどのセグメントよりも V_safe が高いセグメントは、道なりの隣の V_safe に下げる">A segment this short or shorter, with a V_safe above every segment touching its ends, takes its along-road neighbours' V_safe</p>
-   <label class="poi-num"><span data-ja="短いセグメントの上限 m">Short segment max m</span> <input type="number" id="poi-sandwich-len" min="0" max="2000" step="10"></label>
-   <button class="btn-link" id="poi-reset" type="button" data-ja="デフォルトに戻す">Reset to defaults</button>
+   <p class="sb-note">The zone is a Valhalla walking isochrone. One missing for an applied type and its minutes is built first, starting Valhalla in Docker (first start: 30 min&ndash;2 h per country to build routing tiles; shops number in the hundreds of thousands and take hours).</p>
+   <p class="sb-opt-sub">A segment this short or shorter, with a <i>V</i><sub>safe</sub> above every segment touching its ends, takes its along-road neighbours' <i>V</i><sub>safe</sub></p>
+   <label class="poi-num"><span>Short segment max m</span> <input type="number" id="poi-sandwich-len" min="0" max="2000" step="10"></label>
+   <button class="btn-link" id="poi-reset" type="button">Reset to defaults</button>
   </div>
 
   <div class="sb-opt" id="aadt-opt">
-   <p class="sb-opt-title" data-ja="AADT の換算係数">AADT scale factors</p>
-   <p class="sb-opt-sub" data-ja="区間の AADT は、通過したプローブ車両の数（sample_size_avg）にその地域の係数を掛けて求める。1 台のプローブが 1 日あたり何台に相当するか。">A segment's AADT is its probe count (sample_size_avg) times the factor for its region: vehicles per day per probe.</p>
-   <label class="poi-num"><span data-ja="マハラシュトラ">Maharashtra</span> <input type="number" id="aadt-scale-mh" min="0" max="100" step="0.005"></label>
-   <label class="poi-num"><span data-ja="タイ">Thailand</span> <input type="number" id="aadt-scale-th" min="0" max="100" step="0.005"></label>
-   <p class="sb-note" data-ja="既定値は docs/AADT Scaling.xlsx の校正による。交通量を実測した 7 区間（マハラシュトラ 4、タイ 3）について、実測値の合計をプローブ数の合計で割った値。結果は 10〜200,000 台/日に収める。">The defaults come from the calibration in docs/AADT Scaling.xlsx: over the seven segments whose traffic was counted (four in Maharashtra, three in Thailand), the sum of the counted volumes over the sum of the probe counts. The result is held to 10&ndash;200,000 vehicles/day.</p>
-   <button class="btn-link" id="aadt-reset" type="button" data-ja="デフォルトに戻す">Reset to defaults</button>
+   <p class="sb-opt-title">AADT scale factors</p>
+   <p class="sb-opt-sub">A segment's AADT is its probe count (sample_size_avg) times the factor for its region: vehicles per day per probe.</p>
+   <label class="poi-num"><span>Maharashtra</span> <input type="number" id="aadt-scale-mh" min="0" max="100" step="0.005"></label>
+   <label class="poi-num"><span>Thailand</span> <input type="number" id="aadt-scale-th" min="0" max="100" step="0.005"></label>
+   <p class="sb-note">The defaults come from the calibration in docs/AADT Scaling.xlsx: over the seven segments whose traffic was counted (four in Maharashtra, three in Thailand), the sum of the counted volumes over the sum of the probe counts. The result is held to 10&ndash;200,000 vehicles/day.</p>
+   <button class="btn-link" id="aadt-reset" type="button">Reset to defaults</button>
   </div>
 
   <div class="sb-actions">
-    <button class="btn btn-run" id="btn-run" type="button" disabled data-ja="実行">Run</button>
-    <button class="btn btn-cancel" id="btn-cancel" type="button" hidden data-ja="中止">Cancel</button>
+    <button class="btn btn-run" id="btn-run" type="button" disabled>Run</button>
+    <button class="btn btn-cancel" id="btn-cancel" type="button" hidden>Cancel</button>
   </div>
 
   <ol class="chain" id="chain"></ol>
@@ -131,30 +127,30 @@
 </aside>
 
 <div id="title-bar">
-  <b data-ja="速度が安全でない区間">Speed-Unsafe Segments</b>
-  <div class="sub" data-ja='Speed Safety Score による優先度地図（タイ・マハラシュトラ州（インド））。色の付いた区間をクリックすると詳細を表示します。手法はプロジェクトの <a href="https://github.com/iiokentaro/5s" target="_blank" rel="noopener">README</a> を参照してください。'>Speed Safety Score priority map — Thailand &amp; Maharashtra (India).
+  <b>Speed-Unsafe Segments</b>
+  <div class="sub">Speed Safety Score priority map — Thailand &amp; Maharashtra (India).
   Click any highlighted segment for details. See the project
   <a href="https://github.com/iiokentaro/5s" target="_blank" rel="noopener">README</a>
   for methodology.</div>
 </div>
 
 <div id="region-buttons">
-  <button id="btn-world" data-ja="全体">World</button>
-  <button id="btn-thailand" data-ja="タイ">Thailand</button>
-  <button id="btn-maharashtra" data-ja="マハラシュトラ">Maharashtra</button>
+  <button id="btn-world">World</button>
+  <button id="btn-thailand">Thailand</button>
+  <button id="btn-maharashtra">Maharashtra</button>
 </div>
 
 <div id="legend">
-  <b data-ja="優先度（クリックで表示切替）">Priority class (click to toggle)</b>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Top Priority" checked><span class="swatch" style="background:#d73027"></span><span data-ja="最優先">Top Priority</span></label>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Priority" checked><span class="swatch" style="background:#fc8d59"></span><span data-ja="優先">Priority</span></label>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Watch" checked><span class="swatch" style="background:#fee08b"></span><span data-ja="注視">Watch</span></label>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Low Priority" checked><span class="swatch" style="background:#a6d96a"></span><span data-ja="低優先（差はあるがスコアが低い）">Low Priority (gap exists, low score)</span></label>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Aligned" checked><span class="swatch" style="background:#4dd0e1"></span><span data-ja="整合（制限速度 &le; V_safe）">Aligned (limit &le; V_safe)</span></label>
-  <label class="cls-toggle"><input type="checkbox" data-cls="Data Quality Issue (Excluded)"><span class="swatch" style="background:#636363"></span><span data-ja="データ品質の問題（除外。初期表示なし）">Data Quality Issue (excluded, off by default)</span></label>
-  <b style="margin-top:6px;" data-ja="レビュー区分（線の種類）">Review track (line style)</b>
-  <div><span class="solid"></span> <span data-ja="要レビュー（制限速度の記録は妥当）">Review Needed (speed-limit record plausible)</span></div>
-  <div><span class="dash"></span> <span data-ja="要現地確認（記録が不確か）">Field Verification Needed (record looks unreliable)</span></div>
+  <b>Priority class (click to toggle)</b>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Top Priority" checked><span class="swatch" style="background:#d73027"></span><span>Top Priority</span></label>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Priority" checked><span class="swatch" style="background:#fc8d59"></span><span>Priority</span></label>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Watch" checked><span class="swatch" style="background:#fee08b"></span><span>Watch</span></label>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Low Priority" checked><span class="swatch" style="background:#a6d96a"></span><span>Low Priority (gap exists, low score)</span></label>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Aligned" checked><span class="swatch" style="background:#4dd0e1"></span><span>Aligned (limit &le; <i>V</i><sub>safe</sub>)</span></label>
+  <label class="cls-toggle"><input type="checkbox" data-cls="Data Quality Issue (Excluded)"><span class="swatch" style="background:#636363"></span><span>Data Quality Issue (excluded, off by default)</span></label>
+  <b style="margin-top:6px;">Review track (line style)</b>
+  <div><span class="solid"></span> <span>Review Needed (speed-limit record plausible)</span></div>
+  <div><span class="dash"></span> <span>Field Verification Needed (record looks unreliable)</span></div>
 </div>
 
 <script>
@@ -291,48 +287,39 @@ map.on("load", () => {
   // *_code integers safety_score.py writes (src/build_tiles.py carries only
   // the codes, to keep tile bytes down); decode them back to the label
   // shown here. Order matches EXPOSURE_LEVEL_CODES / CONFIDENCE_LEVEL_CODES.
-  const t = (en, ja) => window.I18N.t(en, ja);
-  const LEVEL_LABELS = [["Low", "低"], ["Medium", "中"], ["High", "高"]];
+  const LEVEL_LABELS = ["Low", "Medium", "High"];
   const CODE = { exposure_level_code: LEVEL_LABELS, confidence_level_code: LEVEL_LABELS };
-  // Japanese display of the category values the tiles carry in English.
-  const VALUE_JA = {
-    "Top Priority": "最優先", "Priority": "優先", "Watch": "注視", "Low Priority": "低優先", "Aligned": "整合",
-    "Data Quality Issue (Excluded)": "データ品質の問題（除外）",
-    "Review Needed": "要レビュー", "Field Verification Needed": "要現地確認",
-    "URBAN": "市街地", "RURAL": "郊外", "thailand": "タイ", "maharashtra": "マハラシュトラ",
-  };
   function fmt(key, val) {
     if (val === null || val === undefined || val === "") return "&mdash;";
-    if (key in CODE) { const l = CODE[key][val]; return l ? t(l[0], l[1]) : "&mdash;"; }
-    if (typeof val === "string" && val in VALUE_JA) return t(val, VALUE_JA[val]);
+    if (key in CODE) return CODE[key][val] ?? "&mdash;";
     if (key in ROUND && !isNaN(parseFloat(val))) return parseFloat(val).toFixed(ROUND[key]);
     return val;
   }
   const FIELDS = [
-    ["priority_class", "Priority class", "優先度"],
-    ["review_track", "Review track", "レビュー区分"],
-    ["speed_limit", "Speed limit (km/h)", "制限速度 (km/h)"],
-    ["v_safe", "Safe speed V_safe (km/h)", "安全速度 V_safe (km/h)"],
-    ["v_safe_basis", "V_safe basis", "V_safe の根拠"],
-    ["misalignment", "Gap (km/h)", "差 (km/h)"],
-    ["exposure_level_code", "VRU exposure level", "VRU 暴露レベル"],
-    ["confidence_level_code", "Data confidence", "データの信頼度"],
-    ["speedlimit_plausibility", "Speed-limit plausibility", "制限速度の妥当性"],
-    ["road_class", "Road class", "道路種別"],
-    ["land_use", "Land use", "土地利用"],
-    ["exp_delta_fatal_percent_uniform", "Est. fatal-crash reduction (Elvik 2019, %)", "死亡事故の推定削減率 (Elvik 2019, %)"],
-    ["country", "Country", "国・地域"],
+    ["priority_class", "Priority class"],
+    ["review_track", "Review track"],
+    ["speed_limit", "Speed limit (km/h)"],
+    ["v_safe", "Safe speed V_safe (km/h)"],
+    ["v_safe_basis", "V_safe basis"],
+    ["misalignment", "Gap (km/h)"],
+    ["exposure_level_code", "VRU exposure level"],
+    ["confidence_level_code", "Data confidence"],
+    ["speedlimit_plausibility", "Speed-limit plausibility"],
+    ["road_class", "Road class"],
+    ["land_use", "Land use"],
+    ["exp_delta_fatal_percent_uniform", "Est. fatal-crash reduction (Elvik 2019, %)"],
+    ["country", "Country"],
   ];
 
   LINE_LAYER_IDS.forEach((layerId) => {
     map.on("click", layerId, (e) => {
       const p = e.features[0].properties;
-      let rows = FIELDS.map(([key, en, ja]) =>
-        `<tr><td class="k">${window.I18N.fmt(t(en, ja))}</td><td>${fmt(key, p[key])}</td></tr>`
+      let rows = FIELDS.map(([key, label]) =>
+        `<tr><td class="k">${window.VSAFE.fmt(label)}</td><td>${fmt(key, p[key])}</td></tr>`
       ).join("");
       const html = `
         <div><b>${p.segment_id ?? ""}</b></div>
-        <p class="expl">${window.I18N.fmt(p.score_explanation ?? "")}</p>
+        <p class="expl">${window.VSAFE.fmt(p.score_explanation ?? "")}</p>
         <table>${rows}</table>
       `;
       new maplibregl.Popup({ maxWidth: "320px" })

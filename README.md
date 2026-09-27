@@ -29,11 +29,11 @@ The question: is the posted speed limit (`SpeedLimit`) on each road segment in l
 
 The ranking is the deliverable. `V_safe` is the yardstick behind it.
 
-`V_safe` never reads the posted limit, and reads measured speed in one place only: the Overture motorway fallback for access control (see "How V_safe is set"). The organizers' Methodology Warning explains why: a high measured 85th-percentile speed is exactly what a road built for high speed produces. Measured speed is otherwise used to check whether the limit record is believable, and for the diagnostic `operating_gap` (F85 − V_safe).
+Because a high measured 85th-percentile speed is exactly what a road built for high speed produces, `V_safe` does not read posted speed limits or the 85th percentile speed. Measured speed is otherwise used to check whether the limit record is believable, and for the diagnostic `operating_gap` (F85 − V_safe).
 
 **Scope.** The ADB data covers 55,884 Thailand segments and 14,082 Maharashtra segments. Speed data exists for 15,121 of them (21.6%), and these form the analysis population. The pipeline cuts them into smaller pieces (see Method), so the output `segments_v_safe.parquet` has 102,508 rows: 75,830 Thailand and 26,678 Maharashtra. 1,257 Thailand rows are flagged `data_quality_flag='invalid_speed'`, which leaves 101,251 valid rows. Total length is 60,617 km for Thailand and 40,266 km for Maharashtra. `overture_segment_id` links every row back to its ADB segment.
 
-A row is a piece of a segment, so a share counted by rows gives a 100 m piece the same weight as a 5 km one. Where that matters, the share by length is given too.
+A row is a piece of a segment, so a share counted by rows gives a 100 m piece the same weight as a 5 km one. Where that matters, the share by length is given too. For example, the thresholds of the priority classes are measured by cumulative length in the road network.
 
 ## Results by region
 
@@ -61,9 +61,11 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Re-extracting OSM data also needs `osmium-tool` (`brew install osmium-tool` on macOS, `apt install osmium-tool` on Debian/Ubuntu).
+Re-extracting OSM data also needs `osmium-tool`.
 
 ### In the browser
+
+To make things easier, we created a GUI to run the pipeline.
 
 ```bash
 python src/serve_map.py --enable-pipeline
@@ -114,7 +116,7 @@ python src/build_tiles.py
 
 ### Viewing the map
 
-`python src/serve_map.py` serves the map at http://localhost:8000/. It uses MapLibre GL JS and PMTiles. PMTiles needs HTTP Range requests, so opening `docs/index.html` as a file or with `python -m http.server` does not work. The hosted copy is at https://iiokentaro.github.io/adb-ai-for-safer-roads-safer-speeds-challenge/.
+`python src/serve_map.py` serves the map at http://localhost:8000/. It uses MapLibre GL JS and PMTiles. PMTiles needs HTTP Range requests, so opening `docs/index.html` as a file or with `python -m http.server` does not work.
 
 `python src/quick_reproduce.py` writes the same view to `outputs/priority_map_static.png`.
 
@@ -282,19 +284,26 @@ Recall and Jaccard are measured by length. Every scenario keeps at least 93.8% o
 
 **(3) Benefit estimate.** Among the Review Needed rows above, `tailcap` exceeds `uniform` by 3.8 points on rural roads and by 4.6 on urban roads. The highest speeds carry the highest risk, so a measure aimed at the fastest drivers is worth more where speeds vary most. The measured TomTom distribution moves `uniform` by at most 0.1 points. Neither choice changes a rank. To report all three severities, run `python src/sensitivity_analysis.py --severity all3`.
 
+## Changes from Phase 1 to Phase 2 (and reflections)
+
+- **Every road now starts at 30 km/h.** To stay faithful to the Safe System Approach, the pipeline sets the initial Safe Speed of every road to 30 km/h and raises it only where the evidence allows (Philosophy iii, and "How V_safe is set").
+- **School locations come from Overture Maps as well as OpenStreetMap.** In both India and Thailand, Overture Maps recorded considerably more schools than OpenStreetMap, so fewer schools should be missed than in Phase 1.
+- **More objects are retrieved from the Mapillary API.**
+- **Elvik (2019) is the model for how a speed reduction changes the number of serious crashes.** The calculation now accounts for the spread of speeds (the standard deviation) as well as the mean, which we consider more precise than the earlier approach.
+- **Where the supplied ADB record and TomTom both carry a value and the two differ, the TomTom value is used.**
+- **The AADT behind the benefit-cost ratio is calibrated on published counts.** Historical AADT obtained from Indian and Thai government agency websites calibrates the "sample size" ADB supplied. The sample is too small for the benefit-cost ratio in this repository to be more than a demonstration of the software. The first of the 5S philosophies holds that what is measurable should be measured, so we hope fuller traffic-count data will be at hand by the time a government or a local authority puts this system to use.
+- **In Phase 2, many segments could not be raised above 30 km/h**, because no physical barrier between four-wheeled traffic and other road users could be confirmed. Even when Mapillary detects a barrier, where it stands in relation to the space motorcyclists, cyclists and pedestrians use is hard to establish. It may also be true that motorcycles carry much of the traffic in Thailand and India, and that separation in the Safe System sense is in fact seldom provided there. Applying the Safe System Approach effectively still calls for a finer account of where objects sit within the road space; that is work for the future, and means this challenge did not permit may make it possible.
+
 ## Known limitations
 
 - **Coverage.** Only the 15,121 segments with speed data (21.6% of the network) are analysed. The method says nothing about the rest.
-- **The input attributes are estimates.** `SpeedLimit`, `LandUse` and `RoadClass` come from Overture, and no official limit dataset exists to check them (the organizers' FAQ says the same). The Field Verification list needs a site visit to settle.
-- **Time lag.** The road network dates from December 2024 (Thailand) and May 2025 (Maharashtra). OSM data is from June 2026 and Overture Places from August 2026.
 - **VRU exposure is indirect.** No pedestrian or cyclist counts exist. Rural OSM and Mapillary coverage is close to zero (0 to 4 pedestrian tags and no images in the rural samples checked), so rural exposure often rests on population density alone. A safety-side correction raises rural exposure to at least Medium where population density is in the top quarter for rural roads of that country and no crossing was found. This applies to 25.4% of rural Thailand rows and 30.3% of rural Maharashtra rows.
-- **V_safe depends on OSM tags.** Access control, division and motorcycle access come from OSM. 3,339 rows have `road_structure_confidence='low'`, and they stay at 30 km/h unless the Overture motorway fallback applies.
 - **Grade separation is flagged broadly.** A segment counts as grade-separated if any matched way is a bridge, tunnel or non-zero layer, which OSM's many short canal-bridge ways make true for 24.7% of Thailand rows and 25.2% of Maharashtra rows. Those rows are excluded from the 50 km/h junction cap, so an access-controlled segment that meets an at-grade junction can keep 70 to 100 km/h because a bridge lies somewhere on it.
-- **Weights and thresholds are choices.** The score weights, the class cut-offs (3% / 10% / 20%), the isochrone minutes, the 300 m junction radius and the 250 m sandwich length are set by the team. All are parameters for road authorities to retune to their budget and staffing.
+- **Weights and thresholds are choices.** The score weights, the class cut-offs (3% / 10% / 20%), the isochrone minutes, the 300 m junction radius and the 250 m sandwich length are set by the team. All are parameters for road authorities to retune to their budget and staffing. However, these inputs can be tuned by a user.
 - **Speed data is copied down to the pieces.** A piece inherits its parent's posted limit, observed speeds, `sample_size_avg` and `sample_size_total`. Speed may still vary within a segment, and summing `exp_delta_fatal_abs` over pieces counts the parent more than once.
 - **One TomTom segment can speak for a long stretch.** TomTom values fill the whole uninterrupted stretch they match. `tomtom_covered_len_m_*` shows how much of each piece TomTom actually measured.
-- **`AADT` is scaled from probe counts, calibrated on seven segments.** Four counted segments in Maharashtra and three in Thailand set one factor per region (Pearson's r between counted volume and probe count: 0.95 in Maharashtra, 1.00 in Thailand). Two of Maharashtra's four carry the same counted volume (20,458 vehicles/day in 2012). The estimate assumes probe counts are proportional to traffic and that GDP growth tracks traffic growth. It is a screening value: 9% of rows sit at the 200,000 ceiling, and a real count layer should replace it.
-- **Junction nodes are a manual export.** `data/external/osm_junctions_*.geojson` came from Overpass Turbo (`highway=traffic_signals` or `junction=yes`). To refresh it, re-run that query.
+- **`AADT` is scaled from probe counts, calibrated on seven segments.** Four counted segments in Maharashtra and three in Thailand set one factor per region (Pearson's r between counted volume and probe count: 0.95 in Maharashtra, 1.00 in Thailand), so it is mere a demonstration of the software until fuller traffic count data is at hand.
+- **This pipeline does not address advisory speed limits for horizontal curves.** Advisory speed limits for horizontal curves are not currently handled in this repository, as determining safe speed increases beyond 30 km/h requires superelevation data.
 - **Use it as a screening tool.** Without crash records or ground truth, external validity is untested. The output shows where to measure and review first. Direct measurement of speeds, VRU counts and posted limits would remove many of the assumptions above.
 
 ## Data sources and licences

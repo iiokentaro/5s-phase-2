@@ -51,13 +51,6 @@ body.sidebar-collapsed{ --sidebar-w:0px; }
 .sb-head img{ width:30px; height:30px; border-radius:6px; }
 .sb-head b{ font-size:14.5px; letter-spacing:.01em; }
 .sb-head small{ display:block; color:var(--ink-faint); font-size:11px; letter-spacing:.04em; text-transform:uppercase; }
-.lang-switch{ margin-left:auto; display:flex; border:1px solid var(--rule); border-radius:99px; overflow:hidden; }
-.lang-switch button{
-  font:inherit; font-size:11.5px; color:var(--ink-dim); background:none; border:0;
-  padding:3px 10px; cursor:pointer;
-}
-.lang-switch button:hover{ color:var(--ink); background:var(--panel); }
-.lang-switch button[aria-pressed="true"]{ color:var(--navy-deep); background:var(--ink-dim); }
 
 .sb-nav{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
 .sb-nav a{

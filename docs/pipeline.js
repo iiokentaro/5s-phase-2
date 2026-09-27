@@ -6,18 +6,17 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const API = "/api/pipeline";
-  const t = (en, ja) => window.I18N.t(en, ja);
   const esc = (text) => String(text ?? "").replace(/[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  // One element, both languages; i18n.js shows the one selected.
-  const bilingual = (tag, cls, en, ja) =>
-    `<${tag}${cls ? ` class="${cls}"` : ""} data-en="${esc(en)}" data-ja="${esc(ja ?? en)}">${window.I18N.fmt(esc(t(en, ja)))}</${tag}>`;
+  // Server-supplied text: escaped, then V_safe typeset.
+  const labelled = (tag, cls, text) =>
+    `<${tag}${cls ? ` class="${cls}"` : ""}>${window.VSAFE.fmt(esc(text))}</${tag}>`;
   const POST_HEADERS = { "Content-Type": "application/json", "X-5S-Pipeline": "1" };
 
   // Mirrors src/poi_params.py; the server validates every value again.
   const POI_TYPES = [
-    ["school", "School", "学校"], ["hospital", "Hospital", "病院"], ["marketplace", "Market", "市場"],
-    ["shop", "Shop", "商店"], ["bus_stop", "Bus stop", "バス停"],
+    ["school", "School"], ["hospital", "Hospital"], ["marketplace", "Market"],
+    ["shop", "Shop"], ["bus_stop", "Bus stop"],
   ];
   const defaultPoiParams = () => ({
     overture_min_confidence: 0.5,
@@ -45,8 +44,8 @@
   // Only the scale factors are tunable: Scaling_to_2025 follows from the years
   // the probes were collected, and the clip bounds from what a road can carry.
   const AADT_REGIONS = [
-    ["maharashtra", "Maharashtra", "マハラシュトラ", "aadt-scale-mh"],
-    ["thailand", "Thailand", "タイ", "aadt-scale-th"],
+    ["maharashtra", "Maharashtra", "aadt-scale-mh"],
+    ["thailand", "Thailand", "aadt-scale-th"],
   ];
   const defaultAadtParams = () => ({
     weighted_scale: { maharashtra: 1.0953284597075048, thailand: 0.045002453618601286 },
@@ -117,8 +116,8 @@
 
   // ---- chain rendering ---------------------------------------------------
   const GROUP_LABELS = {
-    stage1: ["Stage 1 — whole segments", "ステージ1 — セグメント全体"],
-    stage2: ["Stage 2 — after influence-zone split", "ステージ2 — 影響域分割後"],
+    stage1: "Stage 1 — whole segments",
+    stage2: "Stage 2 — after influence-zone split",
   };
 
   const makeNode = (step) => {
@@ -129,7 +128,7 @@
     li.innerHTML =
       '<span class="rail"></span><span class="dot"></span>' +
       '<button class="head" type="button">' +
-      bilingual("span", "label", step.label_en, step.label_ja) +
+      labelled("span", "label", step.label_en) +
       '<span class="t"></span></button>' +
       '<div class="reason" hidden></div><pre class="log" hidden></pre>';
     const log = li.querySelector(".log");
@@ -144,11 +143,10 @@
     li.className = "node group-head";
     li.dataset.status = "pending";
     li.dataset.group = group;
-    const [en, ja] = GROUP_LABELS[group] || [group, group];
     li.innerHTML =
       '<span class="rail"></span><span class="dot"></span>' +
       '<button class="head" type="button">' +
-      bilingual("span", "label", en, ja) +
+      labelled("span", "label", GROUP_LABELS[group] || group) +
       `<span class="count">${count}</span></button>`;
     return li;
   };
@@ -264,15 +262,9 @@
   }, 100);
 
   // ---- summary -----------------------------------------------------------
-  // Takes a function so the summary can be rebuilt in the other language.
-  let summaryFn = null;
-  const setSummary = (fn) => {
-    summaryFn = fn;
-    $("sb-summary").innerHTML = fn ? fn() : "";
-  };
+  const setSummary = (html) => { $("sb-summary").innerHTML = html || ""; };
 
   // ---- presets -----------------------------------------------------------
-  const ETA_JA = { "~10 s": "約 10 秒", minutes: "数分", hours: "数時間" };
   const renderPresets = () => {
     const box = $("presets");
     box.textContent = "";
@@ -281,9 +273,9 @@
       label.className = "preset";
       label.innerHTML =
         `<input type="radio" name="preset" value="${id}"${id === state.preset ? " checked" : ""}>` +
-        `<span class="preset-row">${bilingual("span", "preset-name", meta.label_en, meta.label_ja)}` +
-        bilingual("span", "preset-eta", meta.eta, ETA_JA[meta.eta]) + "</span>" +
-        bilingual("span", "preset-desc", meta.desc_en, meta.desc_ja) +
+        `<span class="preset-row">${labelled("span", "preset-name", meta.label_en)}` +
+        labelled("span", "preset-eta", meta.eta) + "</span>" +
+        labelled("span", "preset-desc", meta.desc_en) +
         `<span class="preset-avail" data-avail="${id}"></span>`;
       label.querySelector("input").addEventListener("change", () => selectPreset(id));
       box.appendChild(label);
@@ -298,10 +290,7 @@
     confirm.hidden = !meta.confirm;
     $("confirm-check").checked = false;
     if (meta.confirm) {
-      const box = $("confirm-text");
-      box.dataset.en = esc(meta.confirm_en);
-      box.dataset.ja = esc(meta.confirm_ja);
-      window.I18N.apply(confirm);
+      $("confirm-text").innerHTML = window.VSAFE.fmt(esc(meta.confirm_en));
     }
     await loadSteps(id);
     updateRunButton();
@@ -316,9 +305,7 @@
     const avail = document.querySelector(`[data-avail="${preset}"]`);
     if (avail) {
       const n = data.steps.length - data.steps.filter((s) => s.skip_reason).length;
-      avail.dataset.en = `${n} / ${data.steps.length} steps available`;
-      avail.dataset.ja = `${data.steps.length} ステップ中 ${n} ステップを実行可能`;
-      avail.textContent = t(avail.dataset.en, avail.dataset.ja);
+      avail.textContent = `${n} / ${data.steps.length} steps available`;
     }
   };
 
@@ -349,8 +336,7 @@
     $("poi-sandwich-len").value = state.poi.sandwich_max_length_m;
     const body = $("poi-caps");
     body.textContent = "";
-    POI_TYPES.forEach(([type, labelEn, labelJa]) => {
-      const label = t(labelEn, labelJa);
+    POI_TYPES.forEach(([type, label]) => {
       const cap = state.poi.speed_caps[type];
       const tr = document.createElement("tr");
       const name = document.createElement("td");
@@ -359,22 +345,22 @@
       const box = document.createElement("input");
       box.type = "checkbox";
       box.checked = cap.enabled;
-      box.setAttribute("aria-label", t(`${label}: cap V_safe`, `${label}: V_safe に上限を適用`));
+      box.setAttribute("aria-label", `${label}: cap V_safe`);
       box.addEventListener("change", () => { cap.enabled = box.checked; savePoi(); });
       on.appendChild(box);
       const speed = document.createElement("td");
       const num = document.createElement("input");
       num.type = "number"; num.min = "5"; num.max = "130"; num.step = "5";
       num.value = cap.speed_kmh;
-      num.setAttribute("aria-label", t(`${label}: speed km/h`, `${label}: 速度 km/h`));
+      num.setAttribute("aria-label", `${label}: speed km/h`);
       num.addEventListener("change", () => { cap.speed_kmh = Number(num.value); savePoi(); });
       speed.appendChild(num);
-      const minutes = [["iso_min_urban", t("urban", "市街地")], ["iso_min_rural", t("rural", "郊外")]].map(([key, where]) => {
+      const minutes = [["iso_min_urban", "urban"], ["iso_min_rural", "rural"]].map(([key, where]) => {
         const td = document.createElement("td");
         const input = document.createElement("input");
         input.type = "number"; input.min = "1"; input.max = "30"; input.step = "1";
         input.value = cap[key];
-        input.setAttribute("aria-label", t(`${label}: walking minutes, ${where}`, `${label}: 徒歩分数（${where}）`));
+        input.setAttribute("aria-label", `${label}: walking minutes, ${where}`);
         input.addEventListener("change", () => { cap[key] = Number(input.value); savePoi(); });
         td.appendChild(input);
         return td;
@@ -406,17 +392,16 @@
   const aadtInputs = () => Array.from(document.querySelectorAll("#aadt-opt input, #aadt-reset"));
 
   const renderAadt = () => {
-    AADT_REGIONS.forEach(([region, labelEn, labelJa, id]) => {
+    AADT_REGIONS.forEach(([region, label, id]) => {
       const input = $(id);
       input.value = state.aadt.weighted_scale[region];
-      input.setAttribute("aria-label",
-        t(`${labelEn}: vehicles per day per probe`, `${labelJa}: プローブ 1 台あたりの台数/日`));
+      input.setAttribute("aria-label", `${label}: vehicles per day per probe`);
     });
     updateRunButton();
   };
 
   const bindAadt = () => {
-    AADT_REGIONS.forEach(([region, , , id]) => {
+    AADT_REGIONS.forEach(([region, , id]) => {
       $(id).addEventListener("change", (e) => {
         state.aadt.weighted_scale[region] = Number(e.target.value); saveAadt();
       });
@@ -447,7 +432,7 @@
     });
     const data = await res.json();
     if (!res.ok) {
-      setSummary(() => `<span style="color:var(--c-pri)">${esc(data.error) || t("could not start", "開始できませんでした")}</span>`);
+      setSummary(`<span style="color:var(--c-pri)">${esc(data.error) || "could not start"}</span>`);
       updateRunButton();
       return;
     }
@@ -455,7 +440,7 @@
     state.lastSeq = data.last_seq || 0;
     state.running = true;
     updateRunButton();
-    setSummary(() => t("running…", "実行中…"));
+    setSummary("running…");
     connect();
   };
 
@@ -505,21 +490,16 @@
     const c = data.counts || {};
     const tone = data.status === "ok" ? "var(--aurora)"
       : data.status === "partial" ? "var(--c-watch)" : "var(--c-pri)";
-    const STATUS_JA = { ok: "成功", partial: "一部失敗", failed: "失敗", cancelled: "中止", timeout: "時間切れ" };
     const reloaded = !!(data.reload_pmtiles && window.reloadTiles);
     if (reloaded) window.reloadTiles(data.reload_pmtiles);
-    setSummary(() => {
-      let html = `<span style="color:${tone}">${esc(t(data.status, STATUS_JA[data.status]))}</span> · ` +
-        `${fmtElapsed(data.elapsed_ms)} · ` +
-        t(`${c.ok || 0} ok / ${c.skipped || 0} skipped / ${c.failed || 0} failed`,
-          `成功 ${c.ok || 0} / スキップ ${c.skipped || 0} / 失敗 ${c.failed || 0}`);
-      if (reloaded) {
-        html += `<br><span style="color:var(--aurora)">${t("map reloaded from new tiles", "新しいタイルで地図を再読み込みしました")}</span>` +
-          "<br>" + t("docs/segments_priority.pmtiles is tracked by git — commit it to publish.",
-                     "docs/segments_priority.pmtiles は git で管理されています。公開するにはコミットしてください。");
-      }
-      return html;
-    });
+    let html = `<span style="color:${tone}">${esc(data.status)}</span> · ` +
+      `${fmtElapsed(data.elapsed_ms)} · ` +
+      `${c.ok || 0} ok / ${c.skipped || 0} skipped / ${c.failed || 0} failed`;
+    if (reloaded) {
+      html += '<br><span style="color:var(--aurora)">map reloaded from new tiles</span>' +
+        "<br>docs/segments_priority.pmtiles is tracked by git — commit it to publish.";
+    }
+    setSummary(html);
   };
 
   // ---- boot --------------------------------------------------------------
@@ -536,9 +516,7 @@
 
     if (!state.enabled) {
       $("presets").innerHTML =
-        `<p class="sb-note" data-en="Restart the server with &lt;code&gt;--enable-pipeline&lt;/code&gt; to run the pipeline from here."` +
-        ` data-ja="ここからパイプラインを実行するには、&lt;code&gt;--enable-pipeline&lt;/code&gt; を付けてサーバーを再起動してください。"></p>`;
-      window.I18N.apply($("presets"));
+        '<p class="sb-note">Restart the server with <code>--enable-pipeline</code> to run the pipeline from here.</p>';
       updateRunButton();
       return;
     }
@@ -555,14 +533,12 @@
       state.running = run.status === "running";
       renderChain(run.steps);
       if (state.running && !run.detached) {
-        setSummary(() => t("running…", "実行中…"));
+        setSummary("running…");
         connect();
       } else if (run.status === "interrupted") {
-        setSummary(() => `<span style="color:var(--c-watch)">${t("interrupted — the server stopped mid-run",
-          "中断されました（実行中にサーバーが停止しました）")}</span>`);
+        setSummary('<span style="color:var(--c-watch)">interrupted — the server stopped mid-run</span>');
       } else if (run.status === "running" && run.detached) {
-        setSummary(() => `<span style="color:var(--c-watch)">${t("a detached run is still alive; logs are unavailable",
-          "切り離された実行がまだ動いています。ログは表示できません")}</span>`);
+        setSummary('<span style="color:var(--c-watch)">a detached run is still alive; logs are unavailable</span>');
       } else {
         finish({ status: run.status, elapsed_ms: run.elapsed_ms, counts: run.counts });
       }
@@ -576,11 +552,5 @@
   bindSeverity();
   bindPoi();
   bindAadt();
-  // i18n.js swaps every data-ja element itself; these are built from state.
-  window.I18N.onChange(() => {
-    renderPoi();
-    renderAadt();
-    if (summaryFn) setSummary(summaryFn);
-  });
   boot();
 })();
